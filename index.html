@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get UPC Code</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            // 1. URL se '?num=xxxx' find karna
+            const urlParams = new URLSearchParams(window.location.search);
+            const clientNumber = urlParams.get('num'); 
+
+            if (clientNumber) {
+                // 2. Agar number link mein mil gaya, toh auto-redirect karo
+                document.getElementById('status').innerText = "Aapka SMS app open ho raha hai...";
+                
+                var phoneNumber = "1900";
+                var message = "PORT " + clientNumber;
+                
+                var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                var smsLink = "";
+
+                if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                    smsLink = "sms:" + phoneNumber + "&body=" + encodeURIComponent(message);
+                } else {
+                    smsLink = "sms:" + phoneNumber + "?body=" + encodeURIComponent(message);
+                }
+
+                window.location.href = smsLink;
+            } else {
+                // 3. Agar aapne link mein number nahi bheja, toh client se manually type karwao
+                document.getElementById('status').innerText = "Apna 10-digit mobile number daalein:";
+                document.getElementById('manualArea').style.display = "block";
+            }
+        };
+
+        // Manual send function
+        function sendManualSms() {
+            var manualNum = document.getElementById('clientNumInput').value;
+            if (manualNum && manualNum.length >= 10) {
+                var message = "PORT " + manualNum;
+                var smsLink = "sms:1900?body=" + encodeURIComponent(message);
+                window.location.href = smsLink;
+            } else {
+                alert("Kripya sahi mobile number daalein");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2 id="status">Loading...</h2>
+    
+    <div id="manualArea" style="display: none;">
+        <input type="number" id="clientNumInput" placeholder="Enter Mobile Number">
+        <br>
+        <button class="btn" onclick="sendManualSms()">Generate PORT SMS</button>
+    </div>
+</body>
+</html>
